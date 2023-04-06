@@ -15,6 +15,35 @@ const Home = () => {
   const [loading, setloading] = useState(false);
   const [allPosts, setAllPosts] = useState(null);
   const [searchText, setSearchText] = useState('');
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+        setloading(true);
+
+        try {
+            const response = await fetch('https://dall-e-srt3.onrender.com/api/v1/post', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            if(response.ok){
+                const result = await response.json();
+
+                //See newest posts that's why get reverse
+                setAllPosts(result.data.reverse());
+            }
+        } catch (error) {
+            alert(error)
+        } finally{
+            setloading(false);
+        }
+    }
+
+    fetchPosts();
+  }, []);
+  
     
   return (
     <section className='max-w-7xl mx-auto'>
@@ -48,7 +77,7 @@ const Home = () => {
                             />
                         ) : (
                             <RenderCards
-                                data={[]}
+                                data={[allPosts]}
                                 title='No posts found'
                             />
                         )}
